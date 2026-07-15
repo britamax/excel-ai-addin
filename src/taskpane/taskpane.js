@@ -3,10 +3,9 @@
   'use strict';
 
   const STORAGE_KEY = 'aiexcel_config';
-  let config = { apiKey: '', model: 'openrouter/deepseek-v4-flash', endpoint: 'https://9router.britamax.my.id/v1/chat/completions', temperature: 0.7 };
-  let messages = [];
-  let abortController = null;
+  let config = { apiKey: '', model: '', endpoint: '', temperature: 0.7 };
   let chatHistory = [];
+  let abortController = null;
 
   // --- Config ---
   function loadConfig() {
@@ -14,18 +13,18 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) Object.assign(config, JSON.parse(raw));
     } catch (_) {}
-    document.getElementById('cfg-apikey').value = config.apiKey;
-    document.getElementById('cfg-model').value = config.model;
-    document.getElementById('cfg-endpoint').value = config.endpoint;
-    document.getElementById('cfg-temp').value = config.temperature;
-    document.getElementById('cfg-temp-val').textContent = config.temperature;
+    document.getElementById('cfg-endpoint').value = config.endpoint || '';
+    document.getElementById('cfg-apikey').value = config.apiKey || '';
+    document.getElementById('cfg-model').value = config.model || '';
+    document.getElementById('cfg-temp').value = config.temperature || 0.7;
+    document.getElementById('cfg-temp-val').textContent = config.temperature || 0.7;
   }
 
   function saveConfig() {
-    config.apiKey = document.getElementById('cfg-apikey').value.trim();
-    config.model = document.getElementById('cfg-model').value;
     config.endpoint = document.getElementById('cfg-endpoint').value.trim();
-    config.temperature = parseFloat(document.getElementById('cfg-temp').value);
+    config.apiKey = document.getElementById('cfg-apikey').value.trim();
+    config.model = document.getElementById('cfg-model').value.trim();
+    config.temperature = parseFloat(document.getElementById('cfg-temp').value) || 0.7;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
     document.getElementById('config-panel').classList.add('hidden');
     setStatus('Config saved', '');
@@ -37,7 +36,6 @@
     const div = document.createElement('div');
     div.className = 'msg ' + role;
     div.innerHTML = '<div class="msg-content">' + escapeHtml(text) + '</div>';
-    // Remove typing indicator
     const typing = container.querySelector('.typing');
     if (typing && role !== 'ai') typing.remove();
     container.appendChild(div);
@@ -47,7 +45,6 @@
 
   function setTypingIndicator() {
     const container = document.getElementById('chat-messages');
-    // Remove existing typing
     const old = container.querySelector('.typing');
     if (old) old.remove();
     const div = document.createElement('div');
@@ -79,10 +76,10 @@
     return '<br><button class="write-btn" onclick="window.writeToCell(\'' + escapeHtml(text.replace(/'/g, "\\'")) + '\')">📝 Write to cell</button>';
   }
 
-  // --- 9router API ---
+  // --- API ---
   async function sendChat(userText) {
-    if (!config.apiKey) {
-      setStatus('Set API Key in settings', 'error');
+    if (!config.endpoint || !config.apiKey) {
+      setStatus('Set Endpoint + API Key in ⚙️ Settings', 'error');
       document.getElementById('config-btn').click();
       return;
     }
@@ -104,18 +101,14 @@
     btn.disabled = true;
 
     try {
-      // Trim history to last 10 messages to avoid context overflow
       const history = chatHistory.slice(-10);
+      const body = { messages: [{ role: 'system', content: 'You are a helpful AI assistant inside Microsoft Excel. Respond concisely and accurately.' }, ...history], temperature: config.temperature, stream: true };
+      if (config.model) body.model = config.model;
 
       const res = await fetch(config.endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + config.apiKey },
-        body: JSON.stringify({
-          model: config.model,
-          messages: [{ role: 'system', content: 'You are a helpful AI assistant inside Microsoft Excel. Respond concisely and accurately. For formulas, explain them clearly.' }, ...history],
-          temperature: config.temperature,
-          stream: true,
-        }),
+        body: JSON.stringify(body),
         signal: abortController.signal,
       });
 
@@ -143,13 +136,12 @@
                 const parsed = JSON.parse(data);
                 const delta = parsed.choices?.[0]?.delta?.content || parsed.choices?.[0]?.delta?.reasoning_content || '';
                 if (delta) { fullContent += delta; updateMessage(msgEl, fullContent); }
-              } catch (_) { /* skip malformed chunks */ }
+              } catch (_) {}
             }
           }
         }
       }
 
-      // Remove typing class
       document.querySelector('.typing')?.classList.remove('typing');
       chatHistory.push({ role: 'assistant', content: fullContent || '(empty response)' });
     } catch (err) {
@@ -175,7 +167,6 @@
         await context.sync();
         setStatus('✅ Written to ' + range.address, '');
       }).catch((err) => {
-        // Fallback: if Excel API not available (Web), copy to clipboard
         navigator.clipboard.writeText(text).then(() => {
           setStatus('📋 Copied to clipboard', '');
         }).catch(() => {});
@@ -191,7 +182,6 @@
     if (info.host === Office.HostType.Excel || info.platform === Office.PlatformType.OfficeOnline) {
       loadConfig();
 
-      // DOM events
       document.getElementById('send-btn').addEventListener('click', () => {
         sendChat(document.getElementById('chat-input').value);
       });
@@ -201,13 +191,11 @@
           sendChat(e.target.value);
         }
       });
-      // Auto-resize input
       document.getElementById('chat-input').addEventListener('input', function () {
         this.style.height = 'auto';
         this.style.height = Math.min(this.scrollHeight, 120) + 'px';
       });
 
-      // Config
       document.getElementById('config-btn').addEventListener('click', () => {
         document.getElementById('config-panel').classList.toggle('hidden');
       });
@@ -219,8 +207,8 @@
         document.getElementById('cfg-temp-val').textContent = this.value;
       });
 
-      // Show config if no API key set
-      if (!config.apiKey) document.getElementById('config-btn').click();
+      // Prompt config if empty
+      if (!config.endpoint || !config.apiKey) document.getElementById('config-btn').click();
     }
   });
 })();

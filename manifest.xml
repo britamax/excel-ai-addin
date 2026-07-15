@@ -1,13 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  manifest.xml — AI Excel Add-in
+  User configures endpoint & API key via task pane settings.
+  Add your AI provider domain below in <AppDomains>.
+-->
 <OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:type="TaskPaneApp">
   <Id>9f8e7d6c-5b4a-3210-fedc-ba9876543210</Id>
   <Version>1.0.0.0</Version>
-  <ProviderName>Zafira Dev</ProviderName>
+  <ProviderName>AI Excel</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="AI Excel" />
-  <Description DefaultValue="AI Chat + Custom Functions via 9router" />
+  <Description DefaultValue="AI Chat + Custom Functions for Excel" />
   <IconUrl DefaultValue="https://britamax.github.io/excel-ai-addin/assets/icon-32.png" />
   <HighResolutionIconUrl DefaultValue="https://britamax.github.io/excel-ai-addin/assets/icon-80.png" />
   <AlternateIcons>
@@ -16,8 +20,11 @@
   </AlternateIcons>
   <SupportUrl DefaultValue="https://github.com/britamax/excel-ai-addin" />
 
+  <!-- Add your AI provider domain here. Example:
+    <AppDomain>https://api.openai.com</AppDomain>
+    <AppDomain>https://api.anthropic.com</AppDomain>
+  -->
   <AppDomains>
-    <AppDomain>9router.britamax.my.id</AppDomain>
   </AppDomains>
 
   <Hosts>

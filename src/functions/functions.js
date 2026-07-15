@@ -1,6 +1,7 @@
 /**
  * AI Custom Functions for Excel — Shared Runtime
  * Namespace: AI => =AI(), =AI.EXPLAIN(), =AI.TABLE()
+ * Config shared via localStorage (set in task pane Settings).
  */
 /* global CustomFunctions, Excel */
 
@@ -11,23 +12,23 @@ function getCfg() {
 
 async function callAI(prompt, sysMsg) {
   const cfg = getCfg();
-  if (!cfg.apiKey) throw new Error('Set API Key di task pane > Settings');
+  if (!cfg.apiKey) throw new Error('Set Endpoint + API Key in task pane ⚙️ Settings first');
+  if (!cfg.endpoint) throw new Error('Set Endpoint in task pane ⚙️ Settings first');
 
-  const ep = cfg.endpoint || 'https://9router.britamax.my.id/v1/chat/completions';
-  const mdl = cfg.model || 'openrouter/deepseek-v4-flash';
+  const body = {
+    messages: [
+      { role: 'system', content: sysMsg || 'You are an AI assistant inside Excel. Be concise.' },
+      { role: 'user', content: prompt }
+    ],
+    temperature: cfg.temperature || 0.7,
+    stream: false,
+  };
+  if (cfg.model) body.model = cfg.model;
 
-  const res = await fetch(ep, {
+  const res = await fetch(cfg.endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + cfg.apiKey },
-    body: JSON.stringify({
-      model: mdl,
-      messages: [
-        { role: 'system', content: sysMsg || 'You are an AI assistant inside Excel. Be concise.' },
-        { role: 'user', content: prompt }
-      ],
-      temperature: cfg.temperature || 0.7,
-      stream: false,
-    }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
@@ -47,7 +48,6 @@ async function aiQuery(query) {
 // =AI.EXPLAIN([cellRef]) — explain selected cell or text
 async function aiExplain(ref) {
   let target = ref;
-  // If cell reference provided, read its value
   if (ref && typeof ref === 'string' && /^[A-Z]+\d*$/i.test(ref.replace(/[^a-zA-Z0-9]/g,''))) {
     try {
       await Excel.run(async (ctx) => {
@@ -58,7 +58,6 @@ async function aiExplain(ref) {
       });
     } catch (_) { target = ref; }
   } else if (!ref || ref === '') {
-    // No arg → read selected range
     try {
       await Excel.run(async (ctx) => {
         const sel = ctx.workbook.getSelectedRange();
