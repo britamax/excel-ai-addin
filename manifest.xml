@@ -20,10 +20,9 @@
   </AlternateIcons>
   <SupportUrl DefaultValue="https://github.com/britamax/excel-ai-addin" />
 
-  <!-- Add your AI provider domain here. Example:
-    <AppDomain>https://api.openai.com</AppDomain>
-    <AppDomain>https://api.anthropic.com</AppDomain>
-  -->
+  <!-- Add your AI provider domain(s) here.
+       Required for Excel to allow API calls to your endpoint.
+       Example: <AppDomain>https://api.openai.com</AppDomain> -->
   <AppDomains>
   </AppDomains>
 
