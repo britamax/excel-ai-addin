@@ -1,16 +1,16 @@
 # AI Excel Add-in
 
-Excel 365 AI assistant — task pane chat + custom functions `=AI()` via 9router (self-hosted AI gateway).
+Excel 365 AI assistant — task pane chat + custom functions `=AI()` with any OpenAI-compatible API.
 
-## Fitur
+## Features
 
-- **💬 Task Pane Chat** — Chat dengan AI langsung di Excel sidebar
-- **📝 Write to Cell** — Klik tombol untuk tulis response ke cell aktif
+- **💬 Task Pane Chat** — Chat with AI directly in Excel sidebar
+- **📝 Write to Cell** — Button to write AI response to active cell
 - **⚡ Custom Functions** — `=AI("prompt")`, `=AI.EXPLAIN()`, `=AI.TABLE()`
-- **🔗 Terhubung ke 9router** — Self-hosted AI gateway via Cloudflare tunnel
-- **⚙️ Config Panel** — Ganti API key, model, temperature tanpa edit code
+- **⚙️ Bring Your Own Endpoint** — Configure any OpenAI-compatible API endpoint, model, and API key
+- **🔗 Shared Runtime** — Task pane and custom functions share config (set once)
 
-## Struktur
+## Structure
 
 ```
 excel-ai-addin/
@@ -27,75 +27,62 @@ excel-ai-addin/
     ├── taskpane/
     │   ├── taskpane.html     # Chat UI
     │   ├── taskpane.css      # Material Design 3 styling
-    │   └── taskpane.js       # Chat logic + 9router API
+    │   └── taskpane.js       # Chat logic
     └── functions/
         ├── functions.html    # Custom functions page (shared runtime)
         ├── functions.js      # =AI(), =AI.EXPLAIN(), =AI.TABLE()
         └── functions.json    # Custom functions metadata
 ```
 
-## Cara Pakai
+## Setup
 
-### 1. Start Server
+### 1. Get the manifest
 
-```bash
-cd excel-ai-addin
-node server.js
-# HTTPS server running on https://localhost:3000
-```
+Download `manifest.xml` from:  
+`https://britamax.github.io/excel-ai-addin/manifest.xml`
 
-### 2. Sideload ke Excel Desktop (Windows)
+Add your AI provider's domain(s) to the `<AppDomains>` section in `manifest.xml` before sideloading.
 
-1. Copy `manifest.xml` ke folder lokal (misal `C:\Users\brita\Desktop\`)
-2. Buka Excel → **Insert** tab → **Add-ins** → **My Add-ins**
-3. Klik **Upload My Add-in** → Browse ke `manifest.xml`
-4. Add-in muncul di ribbon → klik untuk buka task pane
+### 2. Sideload to Excel
 
-### 3. Sideload ke Excel for Web
+**Desktop (Windows / Mac):**
+1. Excel → **Insert** tab → **Add-ins** → **My Add-ins**
+2. Click **Upload My Add-in** → select your `manifest.xml`
+3. Add-in appears in ribbon → click to open task pane
 
-1. Butuh HTTPS URL publik. Bisa via Cloudflare Tunnel:
+**Excel for Web:**
+1. Open Excel Online → **Insert** → **Add-ins** → **Upload My Add-in**
+2. Upload `manifest.xml` or provide URL
 
-```bash
-# Install cloudflared, lalu tunnel ke localhost:3000
-cloudflared tunnel --url https://localhost:3000
-```
+### 3. Configure
 
-2. Dapat URL `https://xxxx.trycloudflare.com`
-3. Edit `manifest.xml` — ganti `https://localhost:3000` ke URL tunnel
-4. Buka Excel Online → **Insert** → **Add-ins** → **Upload My Add-in**
-5. Pilih manifest dari URL atau upload file
-
-### 4. Konfigurasi API Key
-
-1. Buka task pane → klik ⚙️ Settings
-2. Isi **API Key** (dari 9router admin)
-3. Pilih **Model** (default: DeepSeek V4 Flash)
-4. **Save** — siap dipakai
-
-## 9router API
-
-- Endpoint: `https://9router.britamax.my.id/v1/chat/completions`
-- Format: OpenAI-compatible
-- Streaming: ✅ SSE (server-sent events)
-- Models: 100+ (OpenRouter, Gemini, Claude, GPT, locally-hosted)
+1. Open task pane → click **⚙️ Settings**
+2. Enter your **Endpoint URL** (e.g. `https://api.openai.com/v1/chat/completions`)
+3. Enter your **API Key**
+4. Enter **Model name** (optional — leave blank for endpoint default)
+5. Adjust **Temperature** if needed
+6. **Save** — ready to use
 
 ## Custom Functions (Excel)
 
 | Function | Description |
 |----------|-------------|
-| `=AI("question")` | Tanya AI apa pun |
-| `=AI.EXPLAIN(A1)` | Jelaskan nilai/rumus di cell |
-| `=AI.TABLE(A1:C10, "analyze")` | Analisis range data |
+| `=AI("question")` | Ask AI anything |
+| `=AI.EXPLAIN(A1)` | Explain value/formula in a cell |
+| `=AI.TABLE(A1:C10, "analyze")` | Analyze a data range |
 
-> **Note:** Custom functions jalan di **shared runtime** dengan task pane — jadi setting API key cukup sekali.
+> **Note:** Custom functions run in **shared runtime** with the task pane — configure your endpoint and API key once in the task pane, and `=AI()` functions use the same settings automatically.
 
 ## Development
 
 ```bash
-# Regenerate self-signed cert (1 tahun)
+# Install dependencies
+npm install
+
+# Generate self-signed cert (1 year)
 npm run cert
 
-# Start dev server
+# Start HTTPS dev server
 npm start
 ```
 
@@ -103,6 +90,6 @@ npm start
 
 - Office.js API 1.12
 - Excel Custom Functions Runtime 1.1
-- Shared Runtime (task pane + custom functions satu proses)
+- Shared Runtime (task pane + custom functions in one process)
 - Google Material Design 3 UI
-- 9router OpenAI-compatible API
+- Any OpenAI-compatible API
