@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:type="TaskPaneApp">
+  <Id>9f8e7d6c-5b4a-3210-fedc-ba9876543210</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>Zafira Dev</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="AI Excel" />
+  <Description DefaultValue="AI Chat + Custom Functions via 9router" />
+  <IconUrl DefaultValue="https://britamax.github.io/excel-ai-addin/assets/icon-32.png" />
+  <HighResolutionIconUrl DefaultValue="https://britamax.github.io/excel-ai-addin/assets/icon-80.png" />
+  <AlternateIcons>
+    <Icon Url="https://britamax.github.io/excel-ai-addin/assets/icon-32.png" Size="32" Scale="contain" />
+    <Icon Url="https://britamax.github.io/excel-ai-addin/assets/icon-80.png" Size="80" Scale="contain" />
+  </AlternateIcons>
+  <SupportUrl DefaultValue="https://github.com/britamax/excel-ai-addin" />
+
+  <AppDomains>
+    <AppDomain>9router.britamax.my.id</AppDomain>
+  </AppDomains>
+
+  <Hosts>
+    <Host Name="Workbook" />
+  </Hosts>
+
+  <Requirements>
+    <Sets>
+      <Set Name="ExcelApi" MinVersion="1.12" />
+      <Set Name="CustomFunctionsRuntime" MinVersion="1.1" />
+    </Sets>
+  </Requirements>
+
+  <!-- Shared Runtime: taskpane + custom functions in one runtime -->
+  <Runtimes>
+    <Runtime resid="Taskpane.Url" lifetime="long" />
+  </Runtimes>
+
+  <AllFormFactors>
+    <ExtensionPoint xsi:type="Taskpane">
+      <OfficeApp>
+        <Id>9f8e7d6c-5b4a-3210-fedc-ba9876543210</Id>
+      </OfficeApp>
+      <SourceLocation resid="Taskpane.Url" />
+    </ExtensionPoint>
+
+    <ExtensionPoint xsi:type="CustomFunctions">
+      <Script>
+        <SourceLocation resid="Functions.Url" />
+      </Script>
+      <Page>
+        <SourceLocation resid="Functions.Page.Url" />
+      </Page>
+      <Metadata>
+        <SourceLocation resid="Functions.Metadata.Url" />
+      </Metadata>
+      <Namespace resid="Functions.Namespace" />
+    </ExtensionPoint>
+  </AllFormFactors>
+
+  <Resources>
+    <bt:Urls xmlns:bt="http://schemas.microsoft.com/office/OfficeAppBootstrapper">
+      <bt:Url id="Taskpane.Url" DefaultValue="https://britamax.github.io/excel-ai-addin/src/taskpane/taskpane.html" />
+      <bt:Url id="Functions.Url" DefaultValue="https://britamax.github.io/excel-ai-addin/src/functions/functions.js" />
+      <bt:Url id="Functions.Page.Url" DefaultValue="https://britamax.github.io/excel-ai-addin/src/functions/functions.html" />
+      <bt:Url id="Functions.Metadata.Url" DefaultValue="https://britamax.github.io/excel-ai-addin/src/functions/functions.json" />
+    </bt:Urls>
+    <bt:ShortStrings xmlns:bt="http://schemas.microsoft.com/office/OfficeAppBootstrapper">
+      <bt:String id="Functions.Namespace" DefaultValue="AI" />
+    </bt:ShortStrings>
+  </Resources>
+</OfficeApp>

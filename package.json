@@ -1,0 +1,10 @@
+{
+  "name": "excel-ai-addin",
+  "version": "1.0.0",
+  "description": "Excel AI Add-in — Chat + AI() via 9router",
+  "scripts": {
+    "start": "node server.js",
+    "cert": "openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout cert/key.pem -out cert/cert.pem -subj '/CN=localhost'"
+  },
+  "dependencies": {}
+}

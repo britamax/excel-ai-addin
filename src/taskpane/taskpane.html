@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https://9router.britamax.my.id https://appsforoffice.microsoft.com 'unsafe-inline' 'unsafe-eval';
+               connect-src https://9router.britamax.my.id https://britamax.github.io/excel-ai-addin https://appsforoffice.microsoft.com;
+               style-src 'self' 'unsafe-inline';
+               img-src 'self' data: https:;">
+  <title>AI Excel</title>
+  <link rel="stylesheet" href="taskpane.css">
+</head>
+<body>
+  <!-- Config Panel -->
+  <div id="config-panel" class="config-panel hidden">
+    <div class="config-header">
+      <h2>⚙️ Settings</h2>
+      <button id="config-close" class="icon-btn">&times;</button>
+    </div>
+    <div class="config-body">
+      <label>API Key</label>
+      <input type="password" id="cfg-apikey" placeholder="sk-..." />
+      <label>Model</label>
+      <select id="cfg-model">
+        <option value="openrouter/deepseek-v4-flash">DeepSeek V4 Flash</option>
+        <option value="openrouter/deepseek-v4-pro">DeepSeek V4 Pro</option>
+        <option value="su/gemini/gemini-3.5-flash">Gemini 3.5 Flash</option>
+        <option value="kr/claude-sonnet-4.5">Claude Sonnet 4.5</option>
+        <option value="su/claude-sonnet-5">Claude Sonnet 5</option>
+        <option value="cx/gpt-5.4-mini">GPT 5.4 Mini</option>
+      </select>
+      <label>Endpoint</label>
+      <input type="text" id="cfg-endpoint" value="https://9router.britamax.my.id/v1/chat/completions" />
+      <label>Temperature</label>
+      <input type="range" id="cfg-temp" min="0" max="2" step="0.1" value="0.7" />
+      <span id="cfg-temp-val">0.7</span>
+      <button id="cfg-save" class="btn primary">Save</button>
+    </div>
+  </div>
+
+  <!-- Main Chat UI -->
+  <div id="app">
+    <header>
+      <h1>AI Excel</h1>
+      <button id="config-btn" class="icon-btn">⚙️</button>
+    </header>
+
+    <div id="chat-messages">
+      <div class="msg ai">
+        <div class="msg-content">Hi! I'm your AI assistant for Excel. Ask me anything or use <code>=AI(prompt)</code> in a cell.</div>
+      </div>
+    </div>
+
+    <div id="status-bar" class="hidden"></div>
+
+    <div id="input-area">
+      <textarea id="chat-input" rows="2" placeholder="Ask anything..."></textarea>
+      <button id="send-btn" class="btn primary" title="Send">➤</button>
+    </div>
+  </div>
+
+  <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+  <script src="taskpane.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+{
+  "functions": [
+    {
+      "id": "AI",
+      "name": "AI",
+      "description": "Ask AI anything about your spreadsheet",
+      "helpUrl": "",
+      "parameters": [
+        {
+          "name": "query",
+          "description": "Your question or prompt",
+          "type": "string",
+          "optional": false
+        }
+      ],
+      "result": {
+        "type": "string",
+        "description": "AI response text"
+      },
+      "options": {
+        "stream": false,
+        "cancelable": false,
+        "requiresExcelRun": false
+      }
+    },
+    {
+      "id": "AI.EXPLAIN",
+      "name": "AI.EXPLAIN",
+      "description": "Explain the selected cell or a given value",
+      "helpUrl": "",
+      "parameters": [
+        {
+          "name": "reference",
+          "description": "Cell reference or text to explain",
+          "type": "string",
+          "optional": true
+        }
+      ],
+      "result": {
+        "type": "string",
+        "description": "Explanation text"
+      },
+      "options": {
+        "stream": false,
+        "cancelable": false,
+        "requiresExcelRun": true
+      }
+    },
+    {
+      "id": "AI.TABLE",
+      "name": "AI.TABLE",
+      "description": "Analyze a table range with AI",
+      "helpUrl": "",
+      "parameters": [
+        {
+          "name": "range",
+          "description": "Cell range to analyze (e.g., A1:C10)",
+          "type": "string",
+          "optional": true
+        },
+        {
+          "name": "instruction",
+          "description": "What to do with the data",
+          "type": "string",
+          "optional": true
+        }
+      ],
+      "result": {
+        "type": "string",
+        "description": "Analysis result"
+      },
+      "options": {
+        "stream": false,
+        "cancelable": false,
+        "requiresExcelRun": true
+      }
+    }
+  ]
+}
