@@ -1,0 +1,15 @@
+Windows Registry Editor Version 5.00
+
+; Register AI Excel Add-in for testing on Office 365 (16.0)
+; Generated: 2026-07-15
+; 1. Save manifest.xml from https://britamax.github.io/excel-ai-addin/manifest.xml
+; 2. Update the Manifest path below to match your location
+; 3. Double-click this file to run it
+; 4. Restart Excel
+; 5. Insert tab → Add-ins → look for "AI Excel"
+
+[HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\WEF\Developer]
+
+[HKEY_CURRENT_USER\Software\Microsoft\Office\16.0\WEF\Developer\{9f8e7d6c-5b4a-3210-fedc-ba9876543210}]
+"Manifest"="\\\\kantor_bin\\AddIns\\manifest.xml"
+"Version"=dword:00000001
